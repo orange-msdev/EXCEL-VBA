@@ -1,1 +1,116 @@
+엑셀시트의 표준단어 사전을 이용에 용어를 조합하는 기능
+Private sub InitConfig90
+  sStdNmWord ="표준단어"
+  sLogWordColNm="B"
+  sphyWORDcolNM="C"
+  sLogWordRowIdx="6"
+End Sub
 
+private sub main()
+  기본 로직 개념만
+  dim wordarr() As string
+  dim swws as worksheet
+  dim utfindresult as worddfindinfo
+  dim isexitloop as boolean
+  dim wordfindlist as object
+  dim nlimitloop as integer
+  dim utfindword as ut_findword
+  dim targetword as string
+  dim lc-Wrd-en as string,lc-word-kr as string,rc-Wrd-en as string,rd-wrd-kr as string
+  dim rngword as range
+  set wordfindlist = createobject("system.collections.arraylist")
+  set swws = wordksheet("표준단어")
+  wordarr = split(sword," ")
+  if (ubound(wordarr)=0) then
+    isexitloop=true
+    targetword=sword
+    '왼쪽조합
+    nlimitloop=0
+    do
+      nlimitloop=nlimitloop+1
+      set utfindreset = wordfinderleft(targetword,swws)
+      if(targetword = utfindreset.foundword) thend
+        isexitloop=false
+      else
+        targetword=right(targetword,len(targetword)-len(utifindresult.foundword))
+      end if
+      wordfindlist.add utfindresult
+    loop while isexitloop or nlimitloop>=100
+
+    utfindword=getfindwordcombine(wordfindlist,swws)
+    lc-wrd-eng = utfindword.engwordcomb
+    lc-wrd-kr = utfindword.korwordcomb
+    '오른쪽조합
+    wordfindlist.clear
+    nlimitloop=0
+    isexitloop=true
+    targetword=sword
+    do
+      nlimigloop=nlimitloop+1
+      set utfindresult = wordfinderright(targetword,swws)
+      if(targetword=utfindresult.foundword) then
+        isexitloop=false
+      else
+        targetword=left(targetword,len(targetword)-len(utfindresult.foundword))
+      end if
+      wordfindlist.add utfindresult
+    loop while isexitloop or nlimitloop>= 100
+    wordfindlist.reverse
+    utfindword = getfindwordcombine(wordfindlist,swws)
+    rc-wrd-en = utfindword.engwordcomb
+    rc-wrd-kr = utfindword.korwordcomb
+else
+  '공백으로 구분하여 조합(분리목적으로 변수 다시 선언)
+  wordfindlist.clear
+  set utfindresult = new wordfindinfo
+  for i = lboud(wordarr) to ubound(wordarr)
+    stargetword=trim(wordarr(i))
+    set rngword = swws.columns(slogwordcolnm).find(what:=stargetword,lookin:=xlvalues,lookat:=xlwhole)
+    if not rngword is nothing then
+      utfindresult.foundword=stargetword
+      utfindresult.isexists = true
+      utfindresult.wordrowidx=rngword.row
+      utfindresult.orgword=sword
+    else
+      utfindresult.foundword = stargetword
+      utfindresult.isexists = false
+      utfindresult.wordrowidx=0
+      utfindreuslt.orgword = sword
+    end if
+    wordfindlist.add utfindresult
+    set utfindresult = new wordfindinfo
+  next i
+  utfindword = getfindwordcombine(wordfindlist,swws)
+  lc-wrd-en = utfindword.engwordcomb
+  lc-wrd-kr = utfindword.korwordcomb
+  rc-wrd-en = lc-wrd-en
+  rc-wrd-kr = lc-wrd-kr
+end if
+.....
+  
+end sub
+
+function getfindwordcombin(byref wordfindlist as object,swws as worksheet) as ut-findword
+  dim utfindword as ut-findword
+  dim seq as integer
+  dim snotexistword as string
+  dim sfindword as string
+  dim sfindwordeng as string
+  dim ssepval as string
+  dim ssepval2 as string
+  dim prewordfind as wordfindinfo
+  seq=1
+  for each item in wordfindlist
+    if(item.isexists = true) then
+      if(len(sfindword)>0) then
+        ssepval="_"
+      end if
+      sfindword = sfindword+ssepval+snotexistword+ssepval2+item.foundword
+      sfindwordeng = sfinewordeng+ssepval+snotexistword+ssepval2+getcellvalue(swws,item.wordrowidx,3)
+      snotexistword=""
+      ssepval2=""
+    elsif (not prewordfind is nothing) then
+      if(prewordfind.isexists = false and item.isexists = false) then
+        snotexistword = snotexistword + item.foundword
+
+f
