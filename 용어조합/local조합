@@ -1,4 +1,4 @@
-엑셀시트의 표준단어 사전을 이용에 용어를 조합하는 기능
+셀시트의 표준단어 사전을 이용에 용어를 조합하는 기능
 Private sub InitConfig90
   sStdNmWord ="표준단어"
   sLogWordColNm="B"
@@ -112,5 +112,102 @@ function getfindwordcombin(byref wordfindlist as object,swws as worksheet) as ut
     elsif (not prewordfind is nothing) then
       if(prewordfind.isexists = false and item.isexists = false) then
         snotexistword = snotexistword + item.foundword
+        ssepval2 ="_"
+      else
+        snotexistwrd="(x)" + item.foundword
+        ssepval2 = "_"
+      end if
+    else
+      snotexistword ="(X)" + Item.foundword
+      ssepval2 = "-"
+    end if
+    set prewordfind = item
+    seq = seq + 1
+  next item
+  if(len(snoexistword)> 0 and len9Sfindword)>0) then
+    sfindword = sfindword + "_" + snotexitword
+    sfindwordeng = sfindwordeng + "_"+ 누ㅐㅅㄷ탼ㅅ잭ㅇ
+  ElseIF (LEN(snoexitsword) > 0 ) then
+    sfindword = snotexistword
+    sfindwordeng = snotexitword
+  end if
+  utfindword.korwordcomb = sfindword
+  utfindword.engwordcomb = sfindwordeng
+  getfindwordcombine = utfindword
+  exit function
+end function
+
+function getcellvaluee(ws as worksheet,rownum as long, colnum as integer) as string
+  getcellvalue = ws.cells(rowum,colnum).value
+  exit function
+end function
+function wordfinderleft(word as string,ws as worksheet) as wordfindinfo
+  dim result as new wordfindinfo
+  dim nstrlen as intger
+  dim rngword as range
+  dim stargetword as string
+  dim findstartrow as string
+
+  findstartrow = slogwordcolnm & slogwordrowidx
+  nstrlen = len(word)
+  for i = nstrlen to 1 step - 1
+    stargetword = left(word,i)
+    set rngword = ws.columns(slogwordcolnm).find(what:=stargetword,after:=ws.range(findstartrow),lookin:=xlvalues,lookat:=xlwhole)
+    if not rnword is nothing then
+      result.foundword = stargetword
+      result.isexists = true
+      result.wordrowidx = rngword.row
+      result.orgword = word
+      set wordfinderleft = result
+      exit function
+    end if
+  next i
+  result.foundword = stargetword
+  result.isexists = false
+  result.orgword = word
+  result.wordrowidx = 0
+  set wordfinderleft = result
+  exit function
+end function
+
+function wordfinderright(word as string,ws as worksheet) as wordfindinfo
+  dim result as new wordfindinfo
+  dim nstrlen as integer
+  dim rngword as range
+  dim stargetword as string
+  nstrlen = len(word)
+  for i = nstrlen to 1 step - 1
+    stargetword = right(word,i)
+    set rngword = ws.columns9Slogwordcolnm).find(what:=stargetword,lookin:=xlvalues,lookat:=xlwhole)
+    if not rngword is nothing then
+      result.foundword = stargetword
+      result.isexists = true
+      result.wordrowidx = rngword.row
+      result.orgword = word
+      set wordfinderright = result
+      exit function
+    end if
+  next i
+  result.foundword= false
+  result.isexists = false
+  result.wordrowidx = 0
+  result.orgword = word
+  set wordfinderright = result
+  exit function
+end function
+
+module...
+type UT_FindWord
+  KorWordComb as string
+  EngWordComb as string
+end type
+
+class...
+class name : WordFindInfo
+public IsExists as Boolean
+Public FoundWord as string
+Public OrgWord as string
+Public WordRowIdx as Integer
+
 
 f
